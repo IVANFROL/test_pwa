@@ -84,6 +84,7 @@
     /* Учитываем safe area для input area - правильный порядок fallback */
     padding-left: calc(16px + constant(safe-area-inset-left));
     padding-right: calc(16px + constant(safe-area-inset-right));
+    /* Для обычного режима используем safe-area-inset-bottom */
     padding-bottom: calc(12px + constant(safe-area-inset-bottom));
     padding-left: calc(16px + env(safe-area-inset-left));
     padding-right: calc(16px + env(safe-area-inset-right));
@@ -176,14 +177,47 @@
     }
 }
 
-/* Дополнительная поддержка для Android Chrome PWA */
+/* Дополнительная поддержка для PWA режима */
 @media (display-mode: standalone) {
     .safe-area-container {
         /* В PWA режиме safe-area может работать по-другому */
         padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
         padding-left: env(safe-area-inset-left);
         padding-right: env(safe-area-inset-right);
+        /* НЕ добавляем padding-bottom в контейнер для PWA - это вызывает проблемы с клавиатурой */
+        padding-bottom: 0;
+    }
+    
+    /* Для iOS PWA - специальная обработка нижнего отступа */
+    @supports (-webkit-touch-callout: none) {
+        .safe-area-container {
+            /* На iOS в PWA режиме при открытой клавиатуре safe-area-inset-bottom может быть неправильным */
+            padding-bottom: 0;
+        }
+        
+        .chat-input-area {
+            /* На iOS PWA используем safe-area только когда клавиатура закрыта */
+            padding-bottom: calc(12px + max(0px, env(safe-area-inset-bottom)));
+            /* Плавный переход при открытии/закрытии клавиатуры */
+            transition: padding-bottom 0.2s ease-out;
+        }
+        
+        /* Когда клавиатура открыта - убираем лишний отступ safe-area */
+        .safe-area-container.keyboard-open .chat-input-area {
+            /* При открытой клавиатуре используем только базовый padding, без safe-area */
+            /* Это убирает большой отступ снизу на iOS PWA */
+            padding-bottom: 12px !important;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-input-area {
+                padding-bottom: calc(10px + max(0px, env(safe-area-inset-bottom)));
+            }
+            
+            .safe-area-container.keyboard-open .chat-input-area {
+                padding-bottom: 10px !important;
+            }
+        }
     }
 }
 
