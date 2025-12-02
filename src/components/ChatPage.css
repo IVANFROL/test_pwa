@@ -196,9 +196,9 @@
         }
         
         .chat-input-area {
-            /* На iOS PWA используем половину safe-area для уменьшения отступа */
-            /* Это сокращает отступ вдвое, но адаптируется под разные устройства */
-            padding-bottom: calc(12px + max(0px, env(safe-area-inset-bottom) / 2));
+            /* На iOS PWA используем четверть safe-area для минимального отступа */
+            /* Это значительно сокращает отступ, но сохраняет небольшую защиту для устройств с вырезом */
+            padding-bottom: calc(12px + max(0px, env(safe-area-inset-bottom) / 4));
             /* Плавный переход при открытии/закрытии клавиатуры */
             transition: padding-bottom 0.2s ease-out;
         }
@@ -212,8 +212,8 @@
         
         @media (max-width: 768px) {
             .chat-input-area {
-                /* На мобильных тоже используем половину safe-area */
-                padding-bottom: calc(10px + max(0px, env(safe-area-inset-bottom) / 2));
+                /* На мобильных используем четверть safe-area для минимального отступа */
+                padding-bottom: calc(10px + max(0px, env(safe-area-inset-bottom) / 4));
             }
             
             .safe-area-container.keyboard-open .chat-input-area {
