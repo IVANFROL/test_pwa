@@ -126,6 +126,9 @@
     will-change: transform;
     /* Дополнительная фиксация для веб-версии */
     background-color: #ffffff;
+    /* Предотвращаем скролл самого input area */
+    overscroll-behavior: none;
+    touch-action: pan-y;
 }
 
 /* Для веб-версии (не мобильных) - дополнительная фиксация input area */

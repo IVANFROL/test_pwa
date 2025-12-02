@@ -27,6 +27,7 @@ const ChatPage = () => {
     const input = inputRef.current;
     let clearAutofill = null;
     let handleInputFocus = null;
+    let handleInputClick = null;
     
     if (input) {
       // Агрессивное отключение автозаполнения через JavaScript
@@ -40,8 +41,19 @@ const ChatPage = () => {
       input.setAttribute('data-bwignore', 'true');
       input.setAttribute('data-ms-ignore', 'true');
       
+      // Обработка клика для убирания readOnly до фокуса
+      handleInputClick = () => {
+        if (input.hasAttribute('readonly')) {
+          input.removeAttribute('readonly');
+        }
+      };
+      
       // Очистка автозаполнения при фокусе
       handleInputFocus = () => {
+        // Убираем readOnly сразу при первом взаимодействии
+        if (input.hasAttribute('readonly')) {
+          input.removeAttribute('readonly');
+        }
         handleFocus();
         // Очищаем автозаполнение
         if (input.value && input.value.length > 0) {
@@ -53,6 +65,7 @@ const ChatPage = () => {
         }
       };
 
+      input.addEventListener('click', handleInputClick);
       input.addEventListener('focus', handleInputFocus);
       input.addEventListener('blur', handleBlur);
       
@@ -73,8 +86,13 @@ const ChatPage = () => {
     }
 
     return () => {
-      if (input && handleInputFocus) {
-        input.removeEventListener('focus', handleInputFocus);
+      if (input) {
+        if (handleInputClick) {
+          input.removeEventListener('click', handleInputClick);
+        }
+        if (handleInputFocus) {
+          input.removeEventListener('focus', handleInputFocus);
+        }
         input.removeEventListener('blur', handleBlur);
         if (clearAutofill) {
           clearInterval(clearAutofill);
@@ -132,6 +150,7 @@ const ChatPage = () => {
           data-bwignore="true"
           data-ms-ignore="true"
           readOnly
+          onClick={(e) => e.target.removeAttribute('readonly')}
           onFocus={(e) => e.target.removeAttribute('readonly')}
         />
       </div>
