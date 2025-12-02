@@ -56,6 +56,8 @@
     -webkit-overflow-scrolling: touch;
     /* Плавная адаптация при изменении размера viewport (когда появляется клавиатура) */
     transition: height 0.25s ease-out;
+    /* Только контент скроллится, input area остается фиксированным */
+    overscroll-behavior: contain;
 }
 
 /* Message элемент - пример контента */
@@ -72,7 +74,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Input area - фиксированный внизу */
+/* Input area - фиксированный внизу, не скроллится */
 .chat-input-area {
     flex-shrink: 0;
     background-color: #ffffff;
@@ -89,8 +91,9 @@
     padding-left: calc(16px + env(safe-area-inset-left));
     padding-right: calc(16px + env(safe-area-inset-right));
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    /* Input area всегда виден над системной клавиатурой */
-    position: relative;
+    /* Input area фиксирован внизу и не скроллится */
+    position: sticky;
+    bottom: 0;
     z-index: 10;
 }
 
@@ -196,29 +199,28 @@
         }
         
         .chat-input-area {
-            /* На iOS PWA используем четверть safe-area для минимального отступа */
-            /* Это значительно сокращает отступ, но сохраняет небольшую защиту для устройств с вырезом */
-            padding-bottom: calc(12px + max(0px, env(safe-area-inset-bottom) / 4));
+            /* На iOS PWA полностью убираем safe-area для input area */
+            /* Используем минимальный padding для плотного прилегания к клавиатуре */
+            padding-bottom: 4px;
             /* Плавный переход при открытии/закрытии клавиатуры */
-            transition: padding-bottom 0.2s ease-out;
+            transition: padding-bottom 0.15s ease-out;
         }
         
         /* Когда клавиатура открыта - используем минимальный отступ */
         .safe-area-container.keyboard-open .chat-input-area {
-            /* При открытой клавиатуре используем только базовый padding */
-            /* Без safe-area, так как клавиатура уже занимает нижнюю часть */
-            padding-bottom: 12px !important;
+            /* При открытой клавиатуре минимальный padding для максимально плотного прилегания */
+            padding-bottom: 2px !important;
         }
         
         @media (max-width: 768px) {
             .chat-input-area {
-                /* На мобильных используем четверть safe-area для минимального отступа */
-                padding-bottom: calc(10px + max(0px, env(safe-area-inset-bottom) / 4));
+                /* На мобильных минимальный padding без safe-area */
+                padding-bottom: 4px;
             }
             
             .safe-area-container.keyboard-open .chat-input-area {
-                /* При открытой клавиатуре только базовый padding */
-                padding-bottom: 10px !important;
+                /* При открытой клавиатуре минимальный отступ для плотного прилегания */
+                padding-bottom: 2px !important;
             }
         }
     }
