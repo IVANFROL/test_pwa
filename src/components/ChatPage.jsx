@@ -82,10 +82,15 @@ const ChatPage = () => {
           type="text" 
           className="chat-input" 
           placeholder="Type a message..."
+          name="message-input"
+          id="message-input"
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck="false"
+          data-lpignore="true"
+          data-form-type="other"
+          data-1p-ignore="true"
         />
       </div>
     </div>

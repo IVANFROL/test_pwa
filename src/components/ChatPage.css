@@ -118,8 +118,12 @@
     padding-right: calc(16px + env(safe-area-inset-right));
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
     /* Input area находится вне скроллируемой области благодаря flex структуре */
-    /* Не используем position, чтобы он был частью flex контейнера */
+    /* Для веб-версии используем sticky чтобы гарантировать фиксацию */
+    position: sticky;
+    bottom: 0;
     z-index: 10;
+    /* Предотвращаем скролл input area в веб-версии */
+    will-change: transform;
 }
 
 .chat-input {
@@ -135,8 +139,11 @@
     -webkit-appearance: none;
     appearance: none;
     /* Важно: font-size 16px предотвращает автоматический зум на iOS */
-    /* Отключаем автозаполнение */
+    /* Отключаем автозаполнение для всех браузеров */
     -webkit-autofill: none;
+    -webkit-autocomplete: none;
+    /* Дополнительные стили для отключения автозаполнения на Android/Chrome */
+    background-clip: padding-box;
 }
 
 .chat-input:focus {
