@@ -149,6 +149,12 @@
     }
 }
 
+.chat-input-area form {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 .chat-input {
     width: 100%;
     padding: 10px 16px;
@@ -167,6 +173,16 @@
     -webkit-autocomplete: none;
     /* Дополнительные стили для отключения автозаполнения на Android/Chrome */
     background-clip: padding-box;
+    /* Убираем иконку поиска для type="search" */
+}
+
+/* Убираем иконку поиска для type="search" в Chrome/Android */
+.chat-input[type="search"]::-webkit-search-decoration,
+.chat-input[type="search"]::-webkit-search-cancel-button,
+.chat-input[type="search"]::-webkit-search-results-button,
+.chat-input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 /* Убираем стиль автозаполнения (желтый фон в Chrome и других браузерах) */

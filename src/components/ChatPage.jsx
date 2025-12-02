@@ -30,7 +30,7 @@ const ChatPage = () => {
     let handleInputClick = null;
     
     if (input) {
-      // Агрессивное отключение автозаполнения через JavaScript
+      // Агрессивное отключение автозаполнения через JavaScript для Android
       input.setAttribute('autocomplete', 'off');
       input.setAttribute('autocorrect', 'off');
       input.setAttribute('autocapitalize', 'off');
@@ -40,6 +40,12 @@ const ChatPage = () => {
       input.setAttribute('data-1p-ignore', 'true');
       input.setAttribute('data-bwignore', 'true');
       input.setAttribute('data-ms-ignore', 'true');
+      input.setAttribute('data-chrome-autofill-ignore', 'true');
+      input.setAttribute('data-google-autofill-ignore', 'true');
+      // Для Android Chrome - используем type="search" который часто игнорирует автозаполнение
+      if (input.type !== 'search') {
+        input.type = 'search';
+      }
       
       // Обработка клика для убирания readOnly до фокуса
       handleInputClick = () => {
@@ -69,13 +75,27 @@ const ChatPage = () => {
       input.addEventListener('focus', handleInputFocus);
       input.addEventListener('blur', handleBlur);
       
-      // Периодическая очистка автозаполнения
+      // Периодическая очистка автозаполнения (более агрессивно для Android)
       clearAutofill = setInterval(() => {
-        if (input.hasAttribute('autocomplete')) {
-          input.removeAttribute('autocomplete');
-          input.setAttribute('autocomplete', 'off');
+        // Принудительно устанавливаем атрибуты
+        input.setAttribute('autocomplete', 'off');
+        input.setAttribute('autocorrect', 'off');
+        input.setAttribute('autocapitalize', 'off');
+        // Для Android - убеждаемся что type="search"
+        if (input.type !== 'search') {
+          input.type = 'search';
         }
-      }, 100);
+        // Очищаем любые автозаполненные значения
+        const currentValue = input.value;
+        if (currentValue && input.matches(':-webkit-autofill')) {
+          input.value = '';
+          setTimeout(() => {
+            if (input.value === '') {
+              input.value = currentValue;
+            }
+          }, 0);
+        }
+      }, 50);
     }
 
     // Используем visualViewport API для более точного определения
@@ -133,26 +153,30 @@ const ChatPage = () => {
       </main>
       
       <div className="chat-input-area">
-        <input 
-          ref={inputRef}
-          type="text" 
-          className="chat-input" 
-          placeholder="Type a message..."
-          name="x-ignore-autofill"
-          id="x-ignore-autofill"
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck="false"
-          data-lpignore="true"
-          data-form-type="other"
-          data-1p-ignore="true"
-          data-bwignore="true"
-          data-ms-ignore="true"
-          readOnly
-          onClick={(e) => e.target.removeAttribute('readonly')}
-          onFocus={(e) => e.target.removeAttribute('readonly')}
-        />
+        <form autoComplete="off" noValidate>
+          <input 
+            ref={inputRef}
+            type="search"
+            className="chat-input" 
+            placeholder="Type a message..."
+            name="search-query"
+            id="search-query"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
+            data-lpignore="true"
+            data-form-type="other"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            data-ms-ignore="true"
+            data-chrome-autofill-ignore="true"
+            data-google-autofill-ignore="true"
+            readOnly
+            onClick={(e) => e.target.removeAttribute('readonly')}
+            onFocus={(e) => e.target.removeAttribute('readonly')}
+          />
+        </form>
       </div>
     </div>
   );
