@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create PWA Icons</title>
+</head>
+<body>
+    <h1>PWA Icon Generator</h1>
+    <p>Open browser console and run this code to generate icons:</p>
+    <pre>
+// Create canvas and draw icon
+function createIcon(size) {
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    
+    // Background
+    ctx.fillStyle = '#1976d2';
+    ctx.fillRect(0, 0, size, size);
+    
+    // Text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `bold ${size / 3}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Chat', size / 2, size / 2);
+    
+    // Download
+    canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pwa-${size}x${size}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+}
+
+// Generate both icons
+createIcon(192);
+setTimeout(() => createIcon(512), 500);
+    </pre>
+    <script>
+        // Auto-run
+        function createIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#1976d2';
+            ctx.fillRect(0, 0, size, size);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${size / 3}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Chat', size / 2, size / 2);
+            
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `pwa-${size}x${size}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+        
+        setTimeout(() => {
+            createIcon(192);
+            setTimeout(() => createIcon(512), 500);
+        }, 1000);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,203 @@
+/* Safe area container - основной контейнер */
+.safe-area-container {
+    display: flex;
+    flex-direction: column;
+    /* Используем оба значения для максимальной совместимости */
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height - автоматически адаптируется при появлении системной клавиатуры */
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+    background-color: #ffffff;
+    /* Safe area insets с правильным fallback порядком */
+    /* Сначала constant (старые iOS Safari 11.0-11.2), потом env (новые версии) */
+    padding-top: constant(safe-area-inset-top);
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-left: constant(safe-area-inset-left);
+    padding-right: constant(safe-area-inset-right);
+    /* Затем env перезапишет для поддерживающих браузеров */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+/* Header - фиксированный вверху */
+.chat-header {
+    flex-shrink: 0;
+    height: 60px;
+    min-height: 60px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    /* Базовый padding */
+    padding: 0 16px;
+    /* Учитываем safe area для header - добавляем к существующему padding */
+    padding-left: calc(16px + constant(safe-area-inset-left));
+    padding-right: calc(16px + constant(safe-area-inset-right));
+    padding-left: calc(16px + env(safe-area-inset-left));
+    padding-right: calc(16px + env(safe-area-inset-right));
+}
+
+/* Content area - растягивается и занимает доступное пространство */
+.chat-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #ffffff;
+    position: relative;
+    /* Минимальная высота для корректной работы при появлении системной клавиатуры */
+    min-height: 0;
+    /* Webkit scrollbar стилизация */
+    -webkit-overflow-scrolling: touch;
+    /* Плавная адаптация при изменении размера viewport (когда появляется клавиатура) */
+    transition: height 0.25s ease-out;
+}
+
+/* Message элемент - пример контента */
+.message {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: #1976d2;
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    max-width: 80%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Input area - фиксированный внизу */
+.chat-input-area {
+    flex-shrink: 0;
+    background-color: #ffffff;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    /* Базовый padding */
+    padding: 12px 16px;
+    /* Учитываем safe area для input area - правильный порядок fallback */
+    padding-left: calc(16px + constant(safe-area-inset-left));
+    padding-right: calc(16px + constant(safe-area-inset-right));
+    padding-bottom: calc(12px + constant(safe-area-inset-bottom));
+    padding-left: calc(16px + env(safe-area-inset-left));
+    padding-right: calc(16px + env(safe-area-inset-right));
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    /* Input area всегда виден над системной клавиатурой */
+    position: relative;
+    z-index: 10;
+}
+
+.chat-input {
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 24px;
+    font-size: 16px;
+    outline: none;
+    background-color: #f5f5f5;
+    transition: border-color 0.2s;
+    /* Предотвращает зум на iOS при фокусе */
+    -webkit-appearance: none;
+    appearance: none;
+    /* Важно: font-size 16px предотвращает автоматический зум на iOS */
+}
+
+.chat-input:focus {
+    border-color: #1976d2;
+    background-color: #ffffff;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    .chat-header {
+        height: 56px;
+        min-height: 56px;
+    }
+    
+    .chat-input-area {
+        /* Базовый padding для мобильных */
+        padding: 10px 12px;
+        /* Переопределяем с учетом safe area для мобильных */
+        padding-left: calc(12px + constant(safe-area-inset-left));
+        padding-right: calc(12px + constant(safe-area-inset-right));
+        padding-bottom: calc(10px + constant(safe-area-inset-bottom));
+        padding-left: calc(12px + env(safe-area-inset-left));
+        padding-right: calc(12px + env(safe-area-inset-right));
+        padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    }
+}
+
+/* Поддержка для iOS Safari - предотвращение масштабирования при фокусе на input */
+@supports (-webkit-touch-callout: none) {
+    .chat-input {
+        font-size: 16px; /* Предотвращает зум на iOS */
+    }
+    
+    /* Дополнительная оптимизация для iOS */
+    .safe-area-container {
+        /* На iOS 100dvh автоматически адаптируется при появлении клавиатуры */
+        height: 100dvh;
+        min-height: 100dvh;
+    }
+}
+
+/* Для браузеров без поддержки safe-area (Desktop и старые браузеры) */
+@supports not (padding: env(safe-area-inset-top)) {
+    .safe-area-container {
+        padding-top: 0;
+        padding-bottom: 0;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    
+    .chat-header {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    .chat-input-area {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-bottom: 12px;
+    }
+    
+    @media (max-width: 768px) {
+        .chat-input-area {
+            padding-left: 12px;
+            padding-right: 12px;
+            padding-bottom: 10px;
+        }
+    }
+}
+
+/* Дополнительная поддержка для Android Chrome PWA */
+@media (display-mode: standalone) {
+    .safe-area-container {
+        /* В PWA режиме safe-area может работать по-другому */
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+}
+
+/* Поддержка для устройств с вырезами (notch) */
+@supports (padding: max(0px)) {
+    .safe-area-container {
+        /* Используем max() для более надежного fallback */
+        padding-top: max(0px, env(safe-area-inset-top));
+        padding-bottom: max(0px, env(safe-area-inset-bottom));
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+    }
+}
+
+/* Важно: при использовании 100dvh системная клавиатура автоматически уменьшает viewport */
+/* Контент автоматически адаптируется благодаря flex: 1 на .chat-content */
+
