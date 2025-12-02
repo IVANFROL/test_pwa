@@ -124,6 +124,26 @@
     z-index: 10;
     /* Предотвращаем скролл input area в веб-версии */
     will-change: transform;
+    /* Дополнительная фиксация для веб-версии */
+    background-color: #ffffff;
+}
+
+/* Для веб-версии (не мобильных) - дополнительная фиксация input area */
+@media (min-width: 769px) {
+    .chat-input-area {
+        /* В веб-версии используем более строгую фиксацию */
+        position: sticky;
+        bottom: 0;
+        /* Предотвращаем любой скролл input area */
+        overscroll-behavior: none;
+    }
+    
+    /* Убеждаемся, что контент скроллится правильно */
+    .chat-content {
+        /* Изолируем скролл только для контента */
+        overscroll-behavior-y: auto;
+        overscroll-behavior-x: none;
+    }
 }
 
 .chat-input {
@@ -144,6 +164,24 @@
     -webkit-autocomplete: none;
     /* Дополнительные стили для отключения автозаполнения на Android/Chrome */
     background-clip: padding-box;
+}
+
+/* Убираем стиль автозаполнения (желтый фон в Chrome и других браузерах) */
+.chat-input:-webkit-autofill,
+.chat-input:-webkit-autofill:hover,
+.chat-input:-webkit-autofill:focus,
+.chat-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #f5f5f5 inset !important;
+    -webkit-text-fill-color: #333 !important;
+    background-color: #f5f5f5 !important;
+    background-clip: padding-box !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.chat-input:focus:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
+    -webkit-text-fill-color: #333 !important;
+    background-color: #ffffff !important;
 }
 
 .chat-input:focus {
