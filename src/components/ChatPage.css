@@ -196,25 +196,28 @@
         }
         
         .chat-input-area {
-            /* На iOS PWA используем safe-area только когда клавиатура закрыта */
-            padding-bottom: calc(12px + max(0px, env(safe-area-inset-bottom)));
+            /* На iOS PWA используем половину safe-area для уменьшения отступа */
+            /* Это сокращает отступ вдвое, но адаптируется под разные устройства */
+            padding-bottom: calc(12px + max(0px, env(safe-area-inset-bottom) / 2));
             /* Плавный переход при открытии/закрытии клавиатуры */
             transition: padding-bottom 0.2s ease-out;
         }
         
-        /* Когда клавиатура открыта - убираем лишний отступ safe-area */
+        /* Когда клавиатура открыта - используем минимальный отступ */
         .safe-area-container.keyboard-open .chat-input-area {
-            /* При открытой клавиатуре используем только базовый padding, без safe-area */
-            /* Это убирает большой отступ снизу на iOS PWA */
+            /* При открытой клавиатуре используем только базовый padding */
+            /* Без safe-area, так как клавиатура уже занимает нижнюю часть */
             padding-bottom: 12px !important;
         }
         
         @media (max-width: 768px) {
             .chat-input-area {
-                padding-bottom: calc(10px + max(0px, env(safe-area-inset-bottom)));
+                /* На мобильных тоже используем половину safe-area */
+                padding-bottom: calc(10px + max(0px, env(safe-area-inset-bottom) / 2));
             }
             
             .safe-area-container.keyboard-open .chat-input-area {
+                /* При открытой клавиатуре только базовый padding */
                 padding-bottom: 10px !important;
             }
         }
