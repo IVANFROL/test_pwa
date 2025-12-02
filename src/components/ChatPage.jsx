@@ -5,6 +5,7 @@ const ChatPage = () => {
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const inputRef = useRef(null);
   const containerRef = useRef(null);
+  const inputAreaRef = useRef(null);
 
   useEffect(() => {
     // Определение открытия/закрытия клавиатуры на iOS
@@ -28,6 +29,8 @@ const ChatPage = () => {
     let clearAutofill = null;
     let handleInputFocus = null;
     let handleInputClick = null;
+    let preventScrollHandler = null;
+    let preventWheelHandler = null;
     
     // Определяем веб-версию iOS Safari (не PWA)
     const isIOSSafariWeb = /iPad|iPhone|iPod/.test(navigator.userAgent) && 
@@ -124,6 +127,29 @@ const ChatPage = () => {
       window.addEventListener('resize', handleResize);
     }
 
+    // Предотвращаем скролл на input area
+    const inputArea = inputAreaRef.current;
+    
+    if (inputArea) {
+      preventScrollHandler = (e) => {
+        // Блокируем скролл на input area
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      };
+
+      preventWheelHandler = (e) => {
+        // Блокируем wheel события на input area
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      };
+
+      inputArea.addEventListener('touchmove', preventScrollHandler, { passive: false });
+      inputArea.addEventListener('wheel', preventWheelHandler, { passive: false });
+      inputArea.addEventListener('scroll', preventScrollHandler, { passive: false });
+    }
+
     return () => {
       if (input) {
         if (handleInputClick) {
@@ -141,6 +167,14 @@ const ChatPage = () => {
         window.visualViewport.removeEventListener('resize', handleResize);
       } else {
         window.removeEventListener('resize', handleResize);
+      }
+      
+      // Удаляем обработчики скролла
+      const inputArea = inputAreaRef.current;
+      if (inputArea && preventScrollHandler && preventWheelHandler) {
+        inputArea.removeEventListener('touchmove', preventScrollHandler);
+        inputArea.removeEventListener('wheel', preventWheelHandler);
+        inputArea.removeEventListener('scroll', preventScrollHandler);
       }
     };
   }, []);
@@ -171,7 +205,7 @@ const ChatPage = () => {
         </div>
       </main>
       
-      <div className="chat-input-area">
+      <div className="chat-input-area" ref={inputAreaRef}>
         <form autoComplete="off" noValidate>
           <input 
             ref={inputRef}

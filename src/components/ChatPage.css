@@ -128,7 +128,13 @@
     background-color: #ffffff;
     /* Предотвращаем скролл самого input area */
     overscroll-behavior: none;
-    touch-action: pan-y;
+    touch-action: manipulation;
+    /* Блокируем скролл на самом элементе */
+    overflow: hidden;
+    /* Фиксируем позицию */
+    transform: translateZ(0);
+    /* Дополнительная фиксация */
+    -webkit-transform: translateZ(0);
 }
 
 /* Для веб-версии (не мобильных) - дополнительная фиксация input area */
