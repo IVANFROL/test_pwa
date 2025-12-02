@@ -81,7 +81,11 @@ const ChatPage = () => {
           ref={inputRef}
           type="text" 
           className="chat-input" 
-          placeholder="Type a message..." 
+          placeholder="Type a message..."
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
         />
       </div>
     </div>
