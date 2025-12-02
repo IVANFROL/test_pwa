@@ -60,7 +60,20 @@ const ChatPage = () => {
       </header>
       
       <main className="chat-content">
-        <div className="message">Message</div>
+        <div className="messages-container">
+          <div className="message message-sent">Привет! Как дела?</div>
+          <div className="message message-received">Привет! Всё отлично, спасибо!</div>
+          <div className="message message-sent">Отлично! Что планируешь на выходные?</div>
+          <div className="message message-received">Планирую отдохнуть и посмотреть новый фильм</div>
+          <div className="message message-sent">Звучит здорово! Какой фильм?</div>
+          <div className="message message-received">Ещё не решил, может быть что-то из новинок</div>
+          <div className="message message-sent">Понятно, дай знать, если что интересное найдёшь</div>
+          <div className="message message-received">Конечно, обязательно расскажу!</div>
+          <div className="message message-sent">Отлично, буду ждать!</div>
+          <div className="message message-received">Хорошо, до встречи!</div>
+          <div className="message message-sent">До встречи! Хороших выходных!</div>
+          <div className="message message-received">Спасибо, тебе тоже!</div>
+        </div>
       </main>
       
       <div className="chat-input-area">
