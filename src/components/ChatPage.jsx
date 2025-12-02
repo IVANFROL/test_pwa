@@ -29,8 +29,14 @@ const ChatPage = () => {
     let handleInputFocus = null;
     let handleInputClick = null;
     
+    // Определяем веб-версию iOS Safari (не PWA)
+    const isIOSSafariWeb = /iPad|iPhone|iPod/.test(navigator.userAgent) && 
+                           !window.navigator.standalone && 
+                           /Safari/.test(navigator.userAgent) &&
+                           !/CriOS|FxiOS|OPiOS/.test(navigator.userAgent);
+    
     if (input) {
-      // Агрессивное отключение автозаполнения через JavaScript для Android
+      // Агрессивное отключение автозаполнения через JavaScript
       input.setAttribute('autocomplete', 'off');
       input.setAttribute('autocorrect', 'off');
       input.setAttribute('autocapitalize', 'off');
@@ -42,9 +48,17 @@ const ChatPage = () => {
       input.setAttribute('data-ms-ignore', 'true');
       input.setAttribute('data-chrome-autofill-ignore', 'true');
       input.setAttribute('data-google-autofill-ignore', 'true');
-      // Для Android Chrome - используем type="search" который часто игнорирует автозаполнение
-      if (input.type !== 'search') {
-        input.type = 'search';
+      
+      // Для веб-версии iOS Safari используем специальную обработку
+      if (isIOSSafariWeb) {
+        // В Safari веб-версии type="search" может не работать, используем другой подход
+        input.setAttribute('autocomplete', 'new-password');
+        input.setAttribute('data-safari-autofill-ignore', 'true');
+      } else {
+        // Для Android Chrome - используем type="search" который часто игнорирует автозаполнение
+        if (input.type !== 'search') {
+          input.type = 'search';
+        }
       }
       
       // Обработка клика для убирания readOnly до фокуса
@@ -75,16 +89,21 @@ const ChatPage = () => {
       input.addEventListener('focus', handleInputFocus);
       input.addEventListener('blur', handleBlur);
       
-      // Периодическая очистка автозаполнения (более агрессивно для Android)
+      // Периодическая очистка автозаполнения (более агрессивно)
       clearAutofill = setInterval(() => {
         // Принудительно устанавливаем атрибуты
-        input.setAttribute('autocomplete', 'off');
+        if (isIOSSafariWeb) {
+          // Для веб-версии iOS Safari используем 'new-password'
+          input.setAttribute('autocomplete', 'new-password');
+        } else {
+          input.setAttribute('autocomplete', 'off');
+          // Для Android - убеждаемся что type="search"
+          if (input.type !== 'search') {
+            input.type = 'search';
+          }
+        }
         input.setAttribute('autocorrect', 'off');
         input.setAttribute('autocapitalize', 'off');
-        // Для Android - убеждаемся что type="search"
-        if (input.type !== 'search') {
-          input.type = 'search';
-        }
         // Очищаем любые автозаполненные значения
         const currentValue = input.value;
         if (currentValue && input.matches(':-webkit-autofill')) {
@@ -156,11 +175,11 @@ const ChatPage = () => {
         <form autoComplete="off" noValidate>
           <input 
             ref={inputRef}
-            type="search"
+            type="text"
             className="chat-input" 
             placeholder="Type a message..."
-            name="search-query"
-            id="search-query"
+            name="message-text"
+            id="message-text"
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
@@ -172,6 +191,7 @@ const ChatPage = () => {
             data-ms-ignore="true"
             data-chrome-autofill-ignore="true"
             data-google-autofill-ignore="true"
+            data-safari-autofill-ignore="true"
             readOnly
             onClick={(e) => e.target.removeAttribute('readonly')}
             onFocus={(e) => e.target.removeAttribute('readonly')}
