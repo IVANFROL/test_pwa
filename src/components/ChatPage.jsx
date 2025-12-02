@@ -25,9 +25,44 @@ const ChatPage = () => {
     };
 
     const input = inputRef.current;
+    let clearAutofill = null;
+    let handleInputFocus = null;
+    
     if (input) {
-      input.addEventListener('focus', handleFocus);
+      // Агрессивное отключение автозаполнения через JavaScript
+      input.setAttribute('autocomplete', 'off');
+      input.setAttribute('autocorrect', 'off');
+      input.setAttribute('autocapitalize', 'off');
+      input.setAttribute('spellcheck', 'false');
+      input.setAttribute('data-lpignore', 'true');
+      input.setAttribute('data-form-type', 'other');
+      input.setAttribute('data-1p-ignore', 'true');
+      input.setAttribute('data-bwignore', 'true');
+      input.setAttribute('data-ms-ignore', 'true');
+      
+      // Очистка автозаполнения при фокусе
+      handleInputFocus = () => {
+        handleFocus();
+        // Очищаем автозаполнение
+        if (input.value && input.value.length > 0) {
+          const currentValue = input.value;
+          input.value = '';
+          setTimeout(() => {
+            input.value = currentValue;
+          }, 0);
+        }
+      };
+
+      input.addEventListener('focus', handleInputFocus);
       input.addEventListener('blur', handleBlur);
+      
+      // Периодическая очистка автозаполнения
+      clearAutofill = setInterval(() => {
+        if (input.hasAttribute('autocomplete')) {
+          input.removeAttribute('autocomplete');
+          input.setAttribute('autocomplete', 'off');
+        }
+      }, 100);
     }
 
     // Используем visualViewport API для более точного определения
@@ -38,9 +73,12 @@ const ChatPage = () => {
     }
 
     return () => {
-      if (input) {
-        input.removeEventListener('focus', handleFocus);
+      if (input && handleInputFocus) {
+        input.removeEventListener('focus', handleInputFocus);
         input.removeEventListener('blur', handleBlur);
+        if (clearAutofill) {
+          clearInterval(clearAutofill);
+        }
       }
       if (window.visualViewport) {
         window.visualViewport.removeEventListener('resize', handleResize);
@@ -82,8 +120,8 @@ const ChatPage = () => {
           type="text" 
           className="chat-input" 
           placeholder="Type a message..."
-          name="message-input"
-          id="message-input"
+          name="x-ignore-autofill"
+          id="x-ignore-autofill"
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"
@@ -91,6 +129,10 @@ const ChatPage = () => {
           data-lpignore="true"
           data-form-type="other"
           data-1p-ignore="true"
+          data-bwignore="true"
+          data-ms-ignore="true"
+          readOnly
+          onFocus={(e) => e.target.removeAttribute('readonly')}
         />
       </div>
     </div>
